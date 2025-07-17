@@ -12,6 +12,7 @@ class Car {
     this.angle = 0;
     this.damaged = false;
 
+    this.sensor = new Sensor(this);
     this.controls = new Controls();
 
     // this.useBrain = controlType == "AI";
@@ -23,8 +24,9 @@ class Car {
     // this.controls = new Controls(controlType);
   }
 
-  update() {
+  update(roadBoarders) {
     this.#move();
+    this.sensor.update(roadBoarders);
   }
 
   #move() {
@@ -78,6 +80,8 @@ class Car {
     ctx.fill();
 
     ctx.restore();
+
+    this.sensor.draw(ctx);
   }
   //   update(roadBorders, traffic) {
   //     if (!this.damaged) {
