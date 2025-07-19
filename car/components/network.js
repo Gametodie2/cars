@@ -13,6 +13,23 @@ class NeuralNetwork {
     }
     return outputs;
   }
+
+  static mutate(network, amount = 1) {
+    network.levels.forEach((level) => {
+      for (let i = 0; i < level.biases.length; i++) {
+        level.biases[i] = lerp(level.biases[i], Math.random() * 2 - 1, amount);
+      }
+      for (let i = 0; i < level.weights.length; i++) {
+        for (let j = 0; j < level.weights[i].length; j++) {
+          level.weights[i][j] = lerp(
+            level.weights[i][j],
+            Math.random() * 2 - 1,
+            amount
+          );
+        }
+      }
+    });
+  }
 }
 
 class Level {
@@ -32,11 +49,12 @@ class Level {
   static #randomize(level) {
     for (let i = 0; i < level.inputs.length; i++) {
       for (let j = 0; j < level.outputs.length; j++) {
-        level.weights[i][j] = Math.random() * 2 - 1; // Random weights between -1 and 1
+        level.weights[i][j] = Math.random() * 2 - 1;
       }
     }
-    for (let j = 0; j < level.biases.length; j++) {
-      level.biases[j] = Math.random() * 2 - 1; // Random biases between -1 and 1
+
+    for (let i = 0; i < level.biases.length; i++) {
+      level.biases[i] = Math.random() * 2 - 1;
     }
   }
 
@@ -45,17 +63,19 @@ class Level {
       level.inputs[i] = givenInputs[i];
     }
 
-    for (let j = 0; j < level.outputs.length; j++) {
+    for (let i = 0; i < level.outputs.length; i++) {
       let sum = 0;
-      for (let i = 0; i < level.inputs.length; i++) {
-        sum += level.inputs[i] * level.weights[i][j];
+      for (let j = 0; j < level.inputs.length; j++) {
+        sum += level.inputs[j] * level.weights[j][i];
       }
-      if (sum > level.biases[j]) {
-        level.outputs[j] = 1; // Activation function (e.g., step function)
+
+      if (sum > level.biases[i]) {
+        level.outputs[i] = 1;
       } else {
-        level.outputs[j] = 0; // Inactive
+        level.outputs[i] = 0;
       }
     }
+
     return level.outputs;
   }
 }
