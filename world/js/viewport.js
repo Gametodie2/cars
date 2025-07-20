@@ -1,10 +1,10 @@
 class Viewport {
   constructor(canvas) {
     this.canvas = canvas;
-    this.ctx = this.canvas.getContext("2d");
+    this.ctx = canvas.getContext("2d");
 
     this.zoom = 1;
-    this.center = new Point(this.canvas.width / 2, this.canvas.height / 2);
+    this.center = new Point(canvas.width / 2, canvas.height / 2);
     this.offset = scale(this.center, -1);
 
     this.drag = {
@@ -27,12 +27,12 @@ class Viewport {
     this.ctx.translate(offset.x, offset.y);
   }
 
-  getMouse(evt, substractDragOffset = false) {
+  getMouse(evt, subtractDragOffset = false) {
     const p = new Point(
       (evt.offsetX - this.center.x) * this.zoom - this.offset.x,
       (evt.offsetY - this.center.y) * this.zoom - this.offset.y
     );
-    return substractDragOffset ? substract(p, this.drag.offset) : p;
+    return subtractDragOffset ? subtract(p, this.drag.offset) : p;
   }
 
   getOffset() {
@@ -50,8 +50,8 @@ class Viewport {
   }
 
   #handleMouseDown(evt) {
-    if (evt.button === 1) {
-      // middle click
+    if (evt.button == 1) {
+      // middle button
       this.drag.start = this.getMouse(evt);
       this.drag.active = true;
     }
@@ -60,7 +60,7 @@ class Viewport {
   #handleMouseMove(evt) {
     if (this.drag.active) {
       this.drag.end = this.getMouse(evt);
-      this.drag.offset = substract(this.drag.end, this.drag.start);
+      this.drag.offset = subtract(this.drag.end, this.drag.start);
     }
   }
 

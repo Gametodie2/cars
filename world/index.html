@@ -11,8 +11,8 @@
       <button onclick="dispose()">🗑️</button>
       <button onclick="save()">💾</button>
     </div>
-    <div id="controls"></div>
 
+    <script src="js/world.js"></script>
     <script src="js/graphEditor.js"></script>
     <script src="js/viewport.js"></script>
     <script src="js/math/utils.js"></script>
@@ -20,7 +20,7 @@
     <script src="js/primitives/point.js"></script>
     <script src="js/primitives/segment.js"></script>
     <script src="js/primitives/polygon.js"></script>
-    <script src="js/primitives/enveloppe.js"></script>
+    <script src="js/primitives/envelope.js"></script>
     <script>
       myCanvas.width = 600;
       myCanvas.height = 600;
@@ -30,6 +30,8 @@
       const graphString = localStorage.getItem("graph");
       const graphInfo = graphString ? JSON.parse(graphString) : null;
       const graph = graphInfo ? Graph.load(graphInfo) : new Graph();
+      const world = new World(graph);
+
       const viewport = new Viewport(myCanvas);
       const graphEditor = new GraphEditor(viewport, graph);
 
@@ -37,10 +39,13 @@
 
       function animate() {
         viewport.reset();
+        world.generate();
+        world.draw(ctx);
+        ctx.globalAlpha = 0.3;
         graphEditor.display();
-        new Enveloppe(graph.segments[0], 80).draw(ctx);
         requestAnimationFrame(animate);
       }
+
       function dispose() {
         graphEditor.dispose();
       }
