@@ -3,8 +3,12 @@ carCanvas.width = window.innerWidth - 330;
 const networkCanvas = document.getElementById("networkCanvas");
 networkCanvas.width = 300;
 const miniMapCanvas = document.getElementById("miniMapCanvas");
-miniMapCanvas.width = 300;
-miniMapCanvas.height = 300;
+miniMapCanvas.width = 250;
+miniMapCanvas.height = 250;
+
+const dashboardCanvas = document.getElementById("dashboardCanvas");
+dashboardCanvas.width = 200;
+dashboardCanvas.height = 200;
 
 carCanvas.height = window.innerHeight;
 networkCanvas.height = window.innerHeight;
@@ -16,7 +20,7 @@ const networkCtx = networkCanvas.getContext("2d");
 // const worldInfo = worldString ? JSON.parse(worldString) : null;
 // const world = worldInfo ? World.load(worldInfo) : new World(new Graph());
 const viewport = new Viewport(carCanvas, world.zoom, world.offset);
-const miniMap = new MiniMap(miniMapCanvas, world.graph, 300);
+const miniMap = new MiniMap(miniMapCanvas, world.graph, 200);
 
 const N = 100;
 const cars = generateCars(N);
@@ -33,6 +37,7 @@ if (localStorage.getItem("bestBrain")) {
 const traffic = [];
 const roadBorders = world.roadBorders.map((s) => [s.p1, s.p2]);
 
+const dashboard = new Dashboard(dashboardCanvas, bestCar, 200);
 animate();
 
 function save() {
@@ -53,7 +58,9 @@ function generateCars(N) {
 
   const cars = [];
   for (let i = 1; i <= N; i++) {
-    cars.push(new Car(startPoint.x, startPoint.y, 30, 50, "AI", startAngle));
+    const car = new Car(startPoint.x, startPoint.y, 30, 50, "AI", startAngle);
+    car.load(carInfo);
+    cars.push(car);
   }
   return cars;
 }
@@ -79,6 +86,7 @@ function animate(time) {
   const viewPoint = scale(viewport.getOffset(), -1);
   world.draw(carCtx, viewPoint, false);
   miniMap.update(viewPoint);
+  dashboard.update();
 
   for (let i = 0; i < traffic.length; i++) {
     traffic[i].draw(carCtx);

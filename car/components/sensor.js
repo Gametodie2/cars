@@ -4,6 +4,7 @@ class Sensor {
     this.rayCount = 5;
     this.rayLength = 150;
     this.raySpread = Math.PI / 2;
+    this.rayOffset = 0;
 
     this.rays = [];
     this.readings = [];
@@ -64,7 +65,9 @@ class Sensor {
           this.raySpread / 2,
           -this.raySpread / 2,
           this.rayCount == 1 ? 0.5 : i / (this.rayCount - 1)
-        ) + this.car.angle;
+        ) +
+        this.car.angle +
+        this.rayOffset;
 
       const start = { x: this.car.x, y: this.car.y };
       const end = {
@@ -75,26 +78,80 @@ class Sensor {
     }
   }
 
-  draw(ctx) {
+  draw(ctx, dot = false, line = true) {
     for (let i = 0; i < this.rayCount; i++) {
       let end = this.rays[i][1];
       if (this.readings[i]) {
         end = this.readings[i];
       }
 
-      ctx.beginPath();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "yellow";
-      ctx.moveTo(this.rays[i][0].x, this.rays[i][0].y);
-      ctx.lineTo(end.x, end.y);
-      ctx.stroke();
+      if (!dot) {
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "yellow";
+        ctx.moveTo(this.rays[i][0].x, this.rays[i][0].y);
+        ctx.lineTo(end.x, end.y);
+        ctx.stroke();
 
-      ctx.beginPath();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "black";
-      ctx.moveTo(this.rays[i][1].x, this.rays[i][1].y);
-      ctx.lineTo(end.x, end.y);
-      ctx.stroke();
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "black";
+        ctx.moveTo(this.rays[i][1].x, this.rays[i][1].y);
+        ctx.lineTo(end.x, end.y);
+        ctx.stroke();
+      } else {
+        if (line) {
+          const alpha = Math.min(
+            1,
+            Math.max(0.1, 1 - distance(this.rays[i][0], end) / this.rayLength)
+          );
+          ctx.beginPath();
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = "white"; //"blue";
+          ctx.strokeStyle = dot;
+          ctx.moveTo(this.rays[i][0].x, this.rays[i][0].y);
+          ctx.lineTo(end.x, end.y);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.lineWidth = 1;
+          ctx.globalAlpha = 1;
+          ctx.strokeStyle = "#555";
+          ctx.moveTo(end.x, end.y);
+          ctx.lineTo(this.rays[i][1].x, this.rays[i][1].y);
+          ctx.stroke();
+          ctx.strokeStyle = dot;
+          ctx.lineWidth = 5;
+          ctx.globalAlpha = alpha;
+          ctx.beginPath();
+          ctx.arc(end.x, end.y, 2, 0, Math.PI * 2);
+
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        } else {
+          if (this.readings[i]) {
+            const alpha = Math.min(
+              1,
+              Math.max(0.1, 1 - distance(this.rays[i][0], end) / this.rayLength)
+            );
+            ctx.beginPath();
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = "white"; //"blue";
+            ctx.strokeStyle = dot;
+            ctx.moveTo(this.rays[i][0].x, this.rays[i][0].y);
+            ctx.lineTo(end.x, end.y);
+            ctx.stroke();
+
+            ctx.strokeStyle = dot;
+            ctx.lineWidth = 5;
+            ctx.globalAlpha = alpha;
+            ctx.beginPath();
+            ctx.arc(end.x, end.y, 2, 0, Math.PI * 2);
+
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+        }
+      }
     }
   }
 }

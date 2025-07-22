@@ -39,3 +39,8 @@ button:hover {
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.5);
 }
+#dashboardCanvas {
+  position: absolute;
+  bottom: 10px;
+  right: 340px;
+}
